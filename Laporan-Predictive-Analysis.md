@@ -23,7 +23,6 @@ Selanjutnya, implementasi teknologi ini dapat mempercepat perubahan positif dala
 
 1. Membangun sebuah model pembelajaran mesin yang dapat memprediksi kemungkinan seseorang mengidap diabetes berdasarkan faktor-faktor kesehatan yang ada.
 2. Mengevaluasi kinerja model pembelajaran mesin dengan menggunakan berbagai metrik evaluasi seperti akurasi, presisi, recall, F1-score, dan confusion matrix, untuk memastikan bahwa model dapat mendeteksi diabetes secara efektif dan optimal.
-3. Mengidentifikasi dan memilih fitur yang paling relevan yang mempengaruhi kemungkinan seseorang mengidap diabetes untuk memperbaiki performa model.
 
 ### Solution Statement
 
@@ -260,74 +259,3 @@ Berikut adalah ringkasan hasil evaluasi berdasarkan prediksi pada data :
 
    3. Keunggulan Decision Tree:
       Secara keseluruhan, Decision Tree menunjukkan keseimbangan terbaik dalam menangani kedua kelas. Model ini memiliki False Negative lebih rendah dibandingkan Naive Bayes dan False Positive lebih rendah dibandingkan Random Forest. Hal ini menjadikannya model yang lebih optimal untuk mendeteksi kasus positif (diabetes) dengan lebih akurat dan dengan lebih sedikit kesalahan klasifikasi, yang sangat penting dalam konteks medis di mana deteksi dini sangat krusial.
-
-## Hyperparameter Tuning
-
-Pada bagian ini, dilakukan hyperparameter tuning untuk tiga model pembelajaran mesin utama, yaitu Random Forest, Decision Tree, dan Naive Bayes. Proses ini bertujuan untuk menemukan parameter terbaik bagi masing-masing model untuk meningkatkan performa prediksi.
-
-1. Hyperparameter Tuning untuk Random Forest:
-   Untuk Random Forest, dilakukan pencarian grid untuk parameter berikut:
-   - `n_estimators`: Jumlah pohon dalam hutan, dicoba dengan nilai 100 dan 200.
-   - `max_depth`: Kedalaman maksimum pohon, dicoba dengan nilai None, 10, dan 20.
-   - `min_samples_split`: Jumlah minimum sampel untuk membagi node, dicoba dengan nilai 2 dan 5.
-   - `min_samples_leaf`: Jumlah minimum sampel untuk menjadi daun, dicoba dengan nilai 1 dan 2.
-     Hasil tuning menunjukkan bahwa Random Forest memberikan hasil terbaik dengan parameter:
-   - Best Params: `{'max_depth': 10, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}`
-   - Best Score: 0.9718
-
-### Classification Report untuk Random Forest
-
-| Model            | Precision | Recall | F1-Score | Support |
-| ---------------- | --------- | ------ | -------- | ------- |
-| **Class 0**      | 0.97      | 1.00   | 0.99     | 18292   |
-| **Class 1**      | 1.00      | 0.67   | 0.81     | 1708    |
-| **Accuracy**     |           |        | 0.9705   | 20000   |
-| **Macro Avg**    | 0.99      | 0.84   | 0.90     | 20000   |
-| **Weighted Avg** | 0.97      | 0.97   | 0.97     | 20000   |
-
-2. Hyperparameter Tuning untuk Decision Tree:
-   Untuk Decision Tree, parameter yang di-tune meliputi:
-   - `max_depth`: Kedalaman maksimum pohon, dicoba dengan nilai None, 5, 10, dan 20.
-   - `min_samples_split`: Jumlah minimum sampel untuk membagi node, dicoba dengan nilai 2, 5, dan 10.
-   - `min_samples_leaf`: Jumlah minimum sampel untuk menjadi daun, dicoba dengan nilai 1, 2, dan 4.
-     Hasil tuning untuk Decision Tree menunjukkan parameter terbaik:
-   - Best Params: `{'max_depth': 5, 'min_samples_leaf': 1, 'min_samples_split': 2}`
-   - Best Score: 0.9718
-
-### Classification Report untuk Decision Tree
-
-| Model            | Precision | Recall | F1-Score | Support |
-| ---------------- | --------- | ------ | -------- | ------- |
-| **Class 0**      | 0.97      | 1.00   | 0.99     | 18292   |
-| **Class 1**      | 1.00      | 0.67   | 0.81     | 1708    |
-| **Accuracy**     |           |        | 0.9718   | 20000   |
-| **Macro Avg**    | 0.99      | 0.84   | 0.90     | 20000   |
-| **Weighted Avg** | 0.97      | 0.97   | 0.97     | 20000   |
-
-3. Hyperparameter Tuning untuk Naive Bayes:
-   Untuk Naive Bayes, parameter yang di-tune adalah:
-   - `alpha`: Parameter smoothing, dicoba dengan nilai 0.1, 0.5, 1.0, dan 2.0.
-   - `binarize`: Ambang batas binarisasi untuk fitur, dicoba dengan nilai 0.0, 0.5, dan 1.0.
-     Hasil tuning untuk Naive Bayes menunjukkan parameter terbaik:
-   - Best Params: `{'alpha': 1.0, 'binarize': 0.5}`
-   - Best Score: 0.9327375
-
-### Classification Report untuk Naive Bayes
-
-| Model            | Precision | Recall | F1-Score | Support |
-| ---------------- | --------- | ------ | -------- | ------- |
-| **Class 0**      | 0.94      | 0.99   | 0.96     | 18292   |
-| **Class 1**      | 0.75      | 0.32   | 0.44     | 1708    |
-| **Accuracy**     |           |        | 0.9327   | 20000   |
-| **Macro Avg**    | 0.85      | 0.64   | 0.70     | 20000   |
-| **Weighted Avg** | 0.92      | 0.93   | 0.92     | 20000   |
-
-- Naive Bayes memiliki False Negatives yang tinggi, dengan banyak kasus positif (diabetes) yang tidak terdeteksi dengan baik, yang menjadikan model ini kurang optimal dalam hal deteksi diabetes.
-
-## Pemilihan Model Terbaik Setelah Hypertunning
-
-Setelah evaluasi menggunakan berbagai metrik, Decision Tree dipilih sebagai model terbaik untuk memprediksi kemungkinan seseorang mengidap diabetes. Model ini memberikan keseimbangan terbaik antara Precision dan Recall, yang sangat penting dalam konteks medis, terutama dalam mendeteksi kasus positif (diabetes) dengan sedikit kesalahan klasifikasi. Berikut adalah penjelasan lebih lanjut tentang model Decision Tree dan langkah-langkah yang dilakukan untuk melatih serta menguji model ini.
-
-## Kesimpulan
-
-Berdasarkan analisis dan evaluasi model, jelas bahwa model pembelajaran mesin, khususnya Random Forest dan Decision Tree, dapat memprediksi kemungkinan seseorang mengidap diabetes dengan menggunakan fitur-fitur kesehatan yang ada. Kedua model tersebut menunjukkan kinerja yang baik, dengan skor akurasi yang tinggi dan metrik precision serta recall yang kompetitif. Meskipun ada sedikit perbedaan dalam kinerja model, Decision Tree dipilih sebagai model yang lebih seimbang berdasarkan kemampuannya untuk mendeteksi kasus positif (diabetes) dengan sedikit kesalahan positif, yang sangat penting dalam konteks medis.
