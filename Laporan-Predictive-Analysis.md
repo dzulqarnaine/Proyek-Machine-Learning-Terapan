@@ -259,3 +259,19 @@ Berikut adalah ringkasan hasil evaluasi berdasarkan prediksi pada data :
 
    3. Keunggulan Decision Tree:
       Secara keseluruhan, Decision Tree menunjukkan keseimbangan terbaik dalam menangani kedua kelas. Model ini memiliki False Negative lebih rendah dibandingkan Naive Bayes dan False Positive lebih rendah dibandingkan Random Forest. Hal ini menjadikannya model yang lebih optimal untuk mendeteksi kasus positif (diabetes) dengan lebih akurat dan dengan lebih sedikit kesalahan klasifikasi, yang sangat penting dalam konteks medis di mana deteksi dini sangat krusial.
+
+$$
+\text{Precision} = \frac{TP}{TP + FP}
+$$
+
+$$
+\text{Recall} = \frac{TP}{TP + FN}
+$$
+
+$$
+\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+$$
+
+$$
+\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+$$
