@@ -27,7 +27,7 @@ pip install -r requirements.txt
 ```  
 
 ## Tujuan Proyek  
-1. *Membandingkan Kinerja Model:* Menganalisis dan membandingkan kinerja tiga model pembelajaran mesin, yaitu Random Forest, Support Vector Machine (SVM), dan Naive Bayes dalam memprediksi kemungkinan terjadinya diabetes.  
-2. *Evaluasi Hasil Model:* Melakukan analisis terhadap hasil prediksi setiap model untuk menentukan mana yang memiliki performa terbaik berdasarkan metrik-metrik evaluasi seperti akurasi, F1-score, presisi, dan recall.  
-3. *Pengembangan Dashboard Interaktif:* Membuat sebuah dashboard interaktif yang dapat digunakan untuk menampilkan visualisasi hasil prediksi dan membandingkan kinerja model secara lebih mudah dan intuitif. 
-4. *Penyempurnaan Model:* Melakukan analisis lebih lanjut terhadap hyperparameter model untuk meningkatkan hasil prediksi, serta mengoptimalkan model dengan teknik seperti grid search atau random search.
+1. **Membandingkan Kinerja Model:** Menganalisis dan membandingkan kinerja tiga model pembelajaran mesin, yaitu Random Forest, Support Vector Machine (SVM), dan Naive Bayes dalam memprediksi kemungkinan terjadinya diabetes.  
+2. **Evaluasi Hasil Model:** Melakukan analisis terhadap hasil prediksi setiap model untuk menentukan mana yang memiliki performa terbaik berdasarkan metrik-metrik evaluasi seperti akurasi, F1-score, presisi, dan recall.  
+3. **Pengembangan Dashboard Interaktif:** Membuat sebuah dashboard interaktif yang dapat digunakan untuk menampilkan visualisasi hasil prediksi dan membandingkan kinerja model secara lebih mudah dan intuitif. 
+4. **Penyempurnaan Model:** Melakukan analisis lebih lanjut terhadap hyperparameter model untuk meningkatkan hasil prediksi, serta mengoptimalkan model dengan teknik seperti grid search atau random search.
