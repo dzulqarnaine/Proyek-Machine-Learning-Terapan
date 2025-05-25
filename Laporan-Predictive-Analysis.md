@@ -18,20 +18,17 @@ Selanjutnya, implementasi teknologi ini dapat mempercepat perubahan positif dala
 
 1. Bagaimana cara memprediksi kemungkinan seseorang mengidap diabetes berdasarkan berbagai faktor kesehatan yang dimilikinya?
 2. Sejauh mana akurasi model dalam memprediksi diabetes jika dibandingkan dengan metode tradisional dalam deteksi penyakit ini?
-3. Apa saja faktor-faktor utama yang berkontribusi terhadap prediksi diabetes dan bagaimana pentingnya pemilihan fitur dalam membangun model yang lebih efektif?
 
 ### Goals
 
 1. Membangun sebuah model pembelajaran mesin yang dapat memprediksi kemungkinan seseorang mengidap diabetes berdasarkan faktor-faktor kesehatan yang ada.
 2. Mengevaluasi kinerja model pembelajaran mesin dengan menggunakan berbagai metrik evaluasi seperti akurasi, presisi, recall, F1-score, dan confusion matrix, untuk memastikan bahwa model dapat mendeteksi diabetes secara efektif dan optimal.
-3. Menyempurnakan model untuk dapat menangani data yang hilang dengan teknik imputasi atau penghapusan data yang tidak lengkap agar hasil prediksi lebih valid.
-4. Mengidentifikasi dan memilih fitur yang paling relevan yang mempengaruhi kemungkinan seseorang mengidap diabetes untuk memperbaiki performa model.
+3. Mengidentifikasi dan memilih fitur yang paling relevan yang mempengaruhi kemungkinan seseorang mengidap diabetes untuk memperbaiki performa model.
 
 ### Solution Statement
 
-1. Menerapkan beberapa algoritma pembelajaran mesin, seperti Random Forest, Support Vector Machine (SVM), dan Naive Bayes, untuk membandingkan kinerja model dalam memprediksi diabetes.
+1. Menerapkan beberapa algoritma pembelajaran mesin, seperti Random Forest, Decision Tree, dan Naive Bayes, untuk membandingkan kinerja model dalam memprediksi diabetes.
 2. Menganalisis hasil dari masing-masing model dengan menggunakan metrik evaluasi yang telah disebutkan untuk memilih model yang paling efisien dan akurat dalam memberikan prediksi tentang kemungkinan seseorang mengidap diabetes.
-3. Menyaring dan memilih fitur yang paling relevan dengan mengaplikasikan teknik seleksi fitur untuk meningkatkan kualitas model dan memfokuskan perhatian pada faktor yang paling signifikan dalam prediksi diabetes.
 
 ## Data Understanding
 
@@ -77,170 +74,136 @@ Visualisasi KDE (Kernel Density Estimation) memperlihatkan hubungan antara berba
 
 Matriks korelasi memberikan wawasan tentang hubungan antar fitur numerik dalam dataset. Dari matriks ini, dapat terlihat bahwa HbA1c_level dan blood_glucose_level memiliki korelasi positif yang moderat dengan diabetes (0.38 dan 0.39), yang menunjukkan bahwa kadar gula darah dan HbA1c berperan penting dalam menentukan status diabetes. Korelasi yang cukup tinggi ini memperlihatkan bahwa kadar glukosa darah yang tinggi berhubungan langsung dengan kemungkinan seseorang mengidap diabetes. Selain itu, BMI juga memiliki korelasi moderat dengan age (0.38), yang menunjukkan bahwa seiring bertambahnya usia, banyak individu cenderung mengalami peningkatan berat badan, yang pada gilirannya dapat meningkatkan risiko diabetes. Namun, faktor seperti heart_disease dan hypertension menunjukkan korelasi yang lebih rendah dengan diabetes, yang menunjukkan bahwa meskipun kedua faktor ini dapat berkontribusi pada risiko diabetes, mereka mungkin tidak sebesar peran faktor lain seperti kadar glukosa darah atau HbA1c dalam menentukan kemungkinan diabetes.
 
-![Mean](./assets/images/CorrelationMatrix.png)
+![Mean](./assets/images/Matriks-Korelasi.png)
 
 ## Data Preparation
 
-- **`Rare Category Handling`** : Ada kategori yang minoritas pada fitur gender yang jumlahnya itu 18 dari 100000 baris, oleh karena itu kategori gender tersebut diganti dengan kategori mayoritas male/female. Menggantikan kategori minoritas seperti other dengan modus membantu mengurangi noise dan ketidakseimbangan dalam fitur kategori. Hal ini memastikan bahwa analisis dan pemodelan tidak terdistorsi oleh kategori yang sangat jarang muncul, sehingga model dapat belajar dari data yang lebih representatif.
+- **`Category Handling`** : Dalam fitur gender, terdapat kategori langka yang hanya muncul 18 kali dari 100.000 baris data, yaitu kategori selain laki-laki dan perempuan. Oleh karena itu, kategori langka ini diganti dengan kategori mayoritas, yaitu "male" atau "female". Penggantian kategori langka seperti ini dengan modus atau kategori mayoritas membantu mengurangi noise dalam data serta mengatasi ketidakseimbangan yang mungkin terjadi. Dengan cara ini, model dapat belajar dari data yang lebih representatif, mengurangi kemungkinan distorsi yang disebabkan oleh kategori yang sangat jarang muncul, dan meningkatkan kualitas prediksi.
+
+- **`Handling Outlier`** : Outlier pada fitur numerik diidentifikasi menggunakan metode Interquartile Range (IQR). Setelah outlier ditemukan, dilakukan teknik clipping untuk membatasi nilai-nilai yang berada di luar rentang batas yang telah ditentukan. Outlier bisa memberikan pengaruh yang tidak proporsional dalam pelatihan model, sehingga clipping diterapkan untuk mengurangi efek ekstrem dan memastikan bahwa model dilatih menggunakan data yang lebih relevan dan representatif, tanpa terdistorsi oleh nilai-nilai yang sangat jauh dari distribusi data utama.
 
   ```python
-  class RecommenderNet(tf.keras.Model):
-     def __init__(self, num_users, num_movies, embedding_size, **kwargs):
-         super(RecommenderNet, self).__init__(**kwargs)
-         self.num_users = num_users
-         self.num_movies = num_movies
-         self.embedding_size = embedding_size
+    numeric = ['age', 'bmi', 'HbA1c_level', 'blood_glucose_level']
+    outlierValues = {}
+    data_before_clipping = data[numeric].copy()
 
-     # Embedding untuk user
-     self.user_embedding = layers.Embedding(
-         num_users,
-         embedding_size,
-         embeddings_initializer='he_normal',
-         embeddings_regularizer=keras.regularizers.l2(1e-6)
-     )
-     self.user_bias = layers.Embedding(num_users, 1)
+    # Deteksi dan Clipping Outlier
+    for col in numeric:
+        q1, q3 = np.percentile(data[col].dropna(), [25, 75])
+        iqr = q3 - q1
+        lower, upper = q1 - 1.5 * iqr, q3 + 1.5 * iqr
 
-     # Embedding untuk movie
-     self.movie_embedding = layers.Embedding(
-         num_movies,
-         embedding_size,
-         embeddings_initializer='he_normal',
-         embeddings_regularizer=keras.regularizers.l2(1e-6)
-     )
-     self.movie_bias = layers.Embedding(num_movies, 1)
+        outliers = data[col][(data[col] < lower) | (data[col] > upper)]
+        outlierValues[col] = outliers
 
-  def call(self, inputs):
-     user_vector = self.user_embedding(inputs[:, 0])
-     user_bias = self.user_bias(inputs[:, 0])
-     movie_vector = self.movie_embedding(inputs[:, 1])
-     movie_bias = self.movie_bias(inputs[:, 1])
-
-     # Dot product antara user dan movie embedding
-     dot_user_movie = tf.reduce_sum(user_vector * movie_vector, axis=1, keepdims=True)
-
-     # Menambahkan bias
-     x = dot_user_movie + user_bias + movie_bias
-
-     # Aktivasi sigmoid untuk output antara 0 dan 1
-     return tf.nn.sigmoid(x)
+        data[col] = np.clip(data[col], lower, upper)
   ```
 
-- **`Handling Outlier`** : Outlier dicari pada kolom numerik dengan metode IQR, setelah outlier terdeteksi akan diterapkan clipping pada nilai yang berada di luar batas yang telah ditentukan. Outlier dapat memberikan pengaruh yang berlebihan pada proses pelatihan model. Dengan clipping, nilai ekstrim dihilangkan atau dibatasi, sehingga model dapat belajar dari data yang lebih representatif.
+- **`Encoding Fitur Kategori`** : Fitur-fitur kategori seperti gender dan smoking_history diencoding menjadi format numerik menggunakan OneHotEncoder. Pengkodean ini penting karena algoritma pembelajaran mesin membutuhkan data dalam format numerik untuk dapat memproses dan mempelajari pola-pola yang ada. Dengan melakukan pengkodean, informasi dalam data kategori tetap dipertahankan, sementara data yang awalnya bersifat kategorikal diubah menjadi format yang sesuai untuk dimasukkan ke dalam model pembelajaran mesin.
   ```python
-  numerical_features = ['age', 'bmi', 'HbA1c_level', 'blood_glucose_level']
-  outlierValues = {}
-  for col in numerical_features:
-      q25 = np.percentile(df[col].dropna(), 25)
-      q75 = np.percentile(df[col].dropna(), 75)
-      iqr = q75 - q25
-      lowerBound = q25 - 1.5 * iqr
-      upperBound = q75 + 1.5 * iqr
-      outliers = df[col][(df[col] < lowerBound) | (df[col] > upperBound)]
-      outlierValues[col] = outliers
-      df[col] = np.clip(df[col], lowerBound, upperBound)
+    categoric = ['gender', 'smoking_history']
+    encoder = OneHotEncoder(handle_unknown='ignore', sparse_output=False)
+    encoded_data = pd.DataFrame(
+        encoder.fit_transform(data[categoric]),
+        columns=encoder.get_feature_names_out(categoric),
+        index=data.index)
+    data = data.drop(columns=categoric).join(encoded_data)
   ```
-- **`Encoding Fitur Kategori`** : Melakukan encoding fitur-fitur kategori untuk merubahnya menjadi fitur numerik menggunakan OneHotEncoder, fitur-fitur yang diencoding ialah gender dan smoking_history. Alasan melakukan Encoding fitur kategori adalah karena algoritma machine learning memerlukan input numerik. Encoding diperlukan untuk mengonversi data kategori menjadi format numerik tanpa kehilangan informasi yang terkandung dalam kategori tersebut.
+- **`Standarisasi`** : Untuk fitur numerik seperti age dan bmi, dilakukan standarisasi menggunakan StandardScaler. Proses ini memastikan bahwa nilai-nilai fitur berada dalam rentang yang lebih seragam, dengan mayoritas nilai berada dalam rentang -3 hingga 3. Standarisasi ini penting karena perbedaan skala antar fitur bisa mempengaruhi kinerja model, terutama pada algoritma pembelajaran mesin yang sensitif terhadap skala data. Dengan menstandarisasi data, kita membantu model agar lebih cepat dan stabil dalam proses optimasi, serta menghindari bias pada fitur yang memiliki rentang nilai jauh lebih besar.
   ```python
-  categorical_features = ['gender', 'smoking_history']
-  encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
-  encoded_array = encoder.fit_transform(df[categorical_features])
-  encoded_df = pd.DataFrame(encoded_array, columns=encoder.get_feature_names_out(categorical_features), index=df.index)
-  df = df.drop(columns=categorical_features)
-  df = pd.concat([df, encoded_df], axis=1)
+    numeric = ['age', 'bmi', 'blood_glucose_level', 'HbA1c_level']
+    scaler = StandardScaler()
+    data[numeric] = scaler.fit_transform(data[numeric])
   ```
-- **`Standarisasi`** : Melakukan standarisasi pada fitur-fitur numerik untuk menyamakan rentang nilainya dengan mayoritas nilai akan berada dalam rentang -3 sampai 3 menggunakan StandardScaler, fitur-fitur yang akan di normalisasi adalah age dan bmi. Alasan melakukan standarisasi ialah karena standarisasi membantu menghilangkan perbedaan skala antar fitur, sehingga algoritma machine learning dapat melakukan proses optimasi dengan lebih stabil dan cepat, serta mengurangi risiko bias pada fitur yang memiliki rentang nilai yang jauh lebih besar.
+- **`Spliting Data`** : Dataset dibagi menjadi dua bagian, yaitu 80% untuk data pelatihan dan 20% untuk data pengujian. Target atau label yang diprediksi adalah kolom diabetes. Pemisahan data ini sangat penting untuk mengevaluasi kinerja model pada data yang tidak dilihat selama pelatihan. Dengan cara ini, kita dapat mengukur kemampuan model untuk menggeneralisasi dan menghindari overfitting. Pemisahan data juga memungkinkan kita untuk menguji model di lingkungan dunia nyata dengan data baru yang belum pernah dipelajari sebelumnya.
   ```python
-  numerical_features = ['age', 'bmi', 'blood_glucose_level', 'HbA1c_level']
-  scaler = StandardScaler()
-  df[numerical_features] = scaler.fit_transform(df[numerical_features])
-  ```
-- **`Train-Test-Split`** : Membagi data menjadi 80% data training dan 20% data testing serta menentukan fitur diabetes menjadi target atau label yang akan diprediksi. Alasan melakukan proses ini adalah karena pemisahan data penting untuk mengevaluasi kinerja model pada data yang belum pernah dilihat sebelumnya. Hal ini membantu mengukur generalisasi model dan mencegah overfitting.
-  ```python
-  X = df.drop(columns=["diabetes"])
-  y = df["diabetes"]
-  X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=123)
+    X = data.drop(columns=["diabetes"])
+    y = data["diabetes"]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
   ```
 
 ## Modeling
 
-Pada studi kali ini, model yang digunakan adalah **Random Forest**, **XGBoost**, dan **LightGBM** untuk memprediksi kemungkinan seseorang mengidap diabetes berdasarkan fitur-fitur yang ada. Alasan pemilihan ketiga model tersebut adalah:
+Pada Projek ini, model yang digunakan untuk memprediksi kemungkinan seseorang mengidap diabetes berdasarkan fitur-fitur yang tersedia adalah Decision Tree, Random Forest, dan Naive Bayes. Pemilihan ketiga model ini didasarkan pada karakteristik dan keunggulannya masing-masing dalam menangani masalah prediksi penyakit diabetes. Berikut adalah alasan pemilihan model-model tersebut:
 
-- **Random Forest**: Model ini merupakan metode ensemble yang menggabungkan banyak decision tree. Kelebihannya adalah mampu menangani data non-linear dan tidak mudah overfitting. Namun, model ini cenderung lebih lambat dalam proses pelatihan dibandingkan model boosting.
-- **XGBoost**: Merupakan model boosting dengan optimasi regularisasi yang membantu menghindari overfitting. XGBoost bekerja sangat baik pada data tabular dan sering memberikan performa yang tinggi, meskipun waktu pelatihannya lebih lama dibandingkan LightGBM.
-- **LightGBM**: Model boosting yang cepat dan efisien, sangat cocok untuk dataset besar. Namun, LightGBM dapat lebih sensitif terhadap outlier dibandingkan dengan Random Forest dan XGBoost.
+- **Decision Tree**: Decision Tree adalah model yang mudah dipahami dan sangat efektif dalam klasifikasi. Keunggulannya adalah kemampuan untuk menangani data non-linear dengan baik dan memberikan interpretasi yang jelas mengenai proses pengambilan keputusan. Meskipun demikian, model ini cenderung rentan terhadap overfitting, terutama jika pohon keputusan terlalu dalam. Oleh karena itu, teknik pruning atau pembatasan kedalaman pohon sering digunakan untuk mengatasi masalah ini.
+- **Random Forest**: Ini adalah metode ensemble yang menggabungkan banyak pohon keputusan (decision tree) untuk menghasilkan keputusan yang lebih robust. Kelebihan utama dari Random Forest adalah kemampuannya dalam menangani data non-linear dan kemampuannya untuk mengurangi risiko overfitting dibandingkan dengan model pohon keputusan tunggal. Meskipun demikian, Random Forest bisa lebih lambat dalam proses pelatihan dan prediksi ketika dibandingkan dengan model boosting.
+- **Naive Bayes**: Model ini berbasis pada teorema Bayes dengan asumsi independensi antar fitur. Keunggulan utama dari Naive Bayes adalah kemampuannya dalam memproses data dalam jumlah besar dengan cepat dan efisien. Meskipun asumsi independensi fitur terkadang tidak valid, Naive Bayes sering memberikan hasil yang baik untuk masalah klasifikasi sederhana dan berguna dalam kondisi data yang tidak terlalu rumit.
 
-Tahapan yang dilakukan pada proses pemodelan adalah sebagai berikut:
+Tahapan yang Dilakukan dalam Proses Pemodelan:
 
 1. **`Load Model`**:
 
-   - **Random Forest** diload dengan parameter `n_estimators=100` dan `random_state=123`:
+   - **Random Forest** dimuat dengan parameter `n_estimators=100` dan `random_state=42`:
      ```python
-     model_randomforest = RandomForestClassifier(n_estimators=100, random_state=123)
+     random_forest = RandomForestClassifier(n_estimators=100, random_state=42)
      ```
-   - **XGBoost** diload dengan parameter `use_label_encoder=False`, `eval_metric='logloss'`, dan `random_state=123`:
+   - **Decision Tree** dimuat dengan parameter `random_state=42`:
      ```python
-     model_xgboost = XGBClassifier(use_label_encoder=False, eval_metric='logloss', random_state=123)
+     decision_tree = DecisionTreeClassifier(random_state=42)
      ```
-   - **LightGBM** diload dengan parameter `random_state=123`:
+   - **Naive Bayes** :
      ```python
-     model_lightgbm = LGBMClassifier(random_state=123)
+     naive_bayes = BernoulliNB()
      ```
 
 2. **`Pelatihan Model`**:
 
-   - **Random Forest** dilatih dengan data latih yaitu `X_train dan y_train`:
+   - **Random Forest** dilatih menggunakan data pelatihanu `X_train dan y_train`:
      ```python
-     model_randomforest.fit(X_train, y_train)
+     random_forest.fit(X_train, y_train)
      ```
-   - **XGBoost** dilatih dengan data latih yaitu `X_train dan y_train`:
+   - **Decision Tree** dilatih menggunakan data pelatihanu `X_train dan y_train`:
      ```python
-     model_xgboost.fit(X_train, y_train)
+     decision_tree.fit(X_train, y_train)
      ```
-   - **LightGBM** dilatih dengan data latih yaitu `X_train dan y_train`:
+   - **Naive Bayes** dilatih menggunakan data pelatihanu `X_train dan y_train`:
      ```python
-     model_lightgbm.fit(X_train, y_train)
+     naive_bayes.fit(X_train, y_train)
      ```
 
 3. **Evaluasi Model**:
    Hasil pelatihan dari ketiga model dibandingkan untuk menentukan model terbaik berdasarkan metrik evaluasi.
 
-Setelah evaluasi awal, **LightGBM** dipilih sebagai model terbaik karena memberikan hasil prediksi yang paling akurat dibandingkan dengan Random Forest dan XGBoost.
+Setelah melatih ketiga model, hasil prediksi dari masing-masing model dievaluasi menggunakan metrik yang relevan, seperti akurasi, precision, recall, dan F1-score. Hal ini dilakukan untuk membandingkan kinerja masing-masing model dan memilih model terbaik yang dapat memberikan prediksi yang lebih akurat.
+
+Setelah evaluasi awal, Random Forest dipilih sebagai model terbaik berdasarkan kinerja prediksi yang paling optimal dibandingkan dengan Decision Tree dan Naive Bayes. Model ini memberikan hasil yang paling akurat dalam mendeteksi diabetes, meskipun perbandingan lebih lanjut menunjukkan bahwa parameter model harus lebih lanjut disesuaikan untuk meningkatkan kestabilan prediksi pada dataset yang lebih besar.
 
 ## Evaluation
 
-**Evaluasi model** dilakukan menggunakan beberapa metrik utama yang sesuai dengan konteks klasifikasi biner, yaitu **Accuracy**, **Precision**, **Recall**, **F1-Score**, dan **Confusion Matrix**. Metrik ini dipilih karena dataset yang digunakan melibatkan prediksi suatu kondisi (kemungkinan diabetes) di mana keseimbangan antara deteksi positif dan negatif sangat penting.
+**Evaluasi model** dilakukan dengan menggunakan sejumlah metrik kunci yang relevan untuk masalah klasifikasi biner, di antaranya **Accuracy**, **Precision**, **Recall**, **F1-Score**, dan **Confusion Matrix**. Metrik-metrik ini dipilih karena dataset yang digunakan berkaitan dengan prediksi kondisi kesehatan (kemungkinan seseorang mengidap diabetes), di mana penting untuk mempertimbangkan keseimbangan antara deteksi kasus positif dan negatif. Evaluasi ini bertujuan untuk memastikan bahwa model tidak hanya memprediksi dengan tepat, tetapi juga mengurangi kesalahan dalam mendeteksi pasien yang berisiko tinggi.
 
 Metrik Evaluasi yang Digunakan
 
 1. **`Accuracy Score`** :
 
-   - **Accuracy**: Persentase prediksi yang benar dari seluruh prediksi.
+   - **Accuracy**: Mengukur persentase prediksi yang benar dari total data. Metrik ini memberikan gambaran umum tentang kinerja model, meskipun dalam beberapa kasus, seperti ketidakseimbangan kelas, akurasi saja bisa menyesatkan.
 
      $ \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN} $
 
      ```python
-     test_acc = accuracy_score(y_test, y_test_pred)
+     print(f"Akurasi: {accuracy_score(y_test, y_pred_dt):.4f}")
      ```
 
 2. **`Classification Report`** :
 
-   - **Precision**: Proporsi prediksi positif yang benar.
+   - **Precision**: Menunjukkan seberapa banyak dari prediksi positif yang benar-benar positif. Dalam konteks ini, precision menggambarkan seberapa banyak pasien yang diprediksi mengidap diabetes benar-benar mengidapnya. Precision yang tinggi mengurangi risiko memberikan diagnosis positif yang salah.
 
      $ \text{Precision} = \frac{TP}{TP + FP} $
 
-   - **Recall (Sensitivity)**: Proporsi kasus positif yang berhasil dideteksi.
+   - **Recall (Sensitivity)**: Mengukur seberapa banyak kasus positif yang benar-benar berhasil dideteksi oleh model. Recall sangat penting dalam situasi medis, di mana kegagalan untuk mendeteksi seseorang yang mengidap diabetes (false negative) bisa berakibat fatal.
 
      $ \text{Recall} = \frac{TP}{TP + FN} $
 
-   - **F1-Score**: Rata-rata harmonik antara Precision dan Recall, yang memberikan gambaran keseimbangan antara keduanya.
+   - **F1-Score**: Merupakan rata-rata harmonis antara precision dan recall. F1-score memberikan gambaran yang lebih seimbang antara keduanya, terutama jika data cenderung tidak seimbang, dan membantu menilai trade-off antara precision dan recall.
 
      $ \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}} $
 
      ```python
-     print("\n--- Classification Report (Test) ---\n", classification_report(y_test, y_test_pred))
+     print("\nClassification Report:\n", classification_report(y_test, y_pred))
      ```
 
-3. **`Confusion Matrix`** :
+3. **`Confusion Matrix`** : Matriks ini memberikan rincian dari prediksi model, mengklasifikasikan jumlah true positives, true negatives, false positives, dan false negatives. Hal ini sangat berguna untuk menganalisis jenis kesalahan yang dilakukan oleh model, misalnya, apakah lebih sering gagal mendeteksi diabetes atau mengidentifikasi orang sehat sebagai penderita diabetes.
 
    |                    | Predicted Negatif (0) | Predicted Positif (1) |
    | ------------------ | --------------------- | --------------------- |
@@ -248,7 +211,7 @@ Metrik Evaluasi yang Digunakan
    | Actual Positif (1) | False Negative (FN)   | True Positive (TP)    |
 
    ```python
-   test_cm = confusion_matrix(y_test, y_test_pred)
+   cm_dt = confusion_matrix(y_test, y_pred_dt)
    ```
 
 Berikut adalah ringkasan hasil evaluasi berdasarkan prediksi pada data :
@@ -257,31 +220,114 @@ Berikut adalah ringkasan hasil evaluasi berdasarkan prediksi pada data :
 
    | Model         | Accuracy | Precision | Recall | F1-Score |
    | ------------- | -------- | --------- | ------ | -------- |
-   | Random Forest | 0.9683   | 0.97      | 0.97   | 0.97     |
-   | XGBoost       | 0.9701   | 0.97      | 0.97   | 0.97     |
-   | LightGBM      | 0.9705   | 0.97      | 0.97   | 0.97     |
+   | Random Forest | 0.9705   | 0.94      | 0.69   | 0.80     |
+   | Decision Tree | 0.9525   | 0.72      | 0.73   | 0.72     |
+   | Naive Bayes   | 0.9705   | 0.94      | 0.68   | 0.80     |
 
-   Analisis Hasil
+   Analisis Hasil:
 
-   - Accuracy dari ketiga model sangat tinggi (sekitar 97%), yang menunjukkan bahwa model mampu memprediksi dengan sangat baik pada data uji.
+   - Accuracy : Ketiga model menunjukkan akurasinya sangat tinggi (sekitar 97% untuk Random Forest dan Naive Bayes, dan sekitar 95% untuk Decision Tree), yang menunjukkan bahwa semua model mampu memprediksi dengan sangat baik pada data uji. Meskipun Naive Bayes dan Random Forest memiliki akurasi yang sedikit lebih tinggi, perbedaannya sangat kecil.
 
-   - Precision tetap tinggi di semua model (~0.96-0.97), yang berarti model jarang memberikan prediksi positif yang salah (False Positive).
+   - Precision : Semua model memiliki precision tinggi (~0.94 - 0.96), yang berarti model jarang memberikan prediksi positif yang salah (False Positive). Ini menunjukkan bahwa model cukup andal dalam memprediksi orang yang benar-benar mengidap diabetes.
 
-   - Recall sedikit lebih rendah (~0.67-0.68), yang menunjukkan bahwa masih ada beberapa kasus positif yang tidak terdeteksi dengan baik (False Negative).
+   - Recall : Nilai recall sedikit lebih rendah (~0.67 - 0.73), yang menunjukkan bahwa masih ada beberapa kasus positif yang tidak terdeteksi dengan baik oleh model (False Negative). Ini penting, karena False Negatives berarti ada orang yang mengidap diabetes tetapi tidak terdeteksi, yang bisa berisiko untuk kesehatan mereka.
 
-   - F1-Score memberikan gambaran keseimbangan antara Precision dan Recall, dengan hasil terbaik pada XGBoost dan LightGBM (~0.80).
+   - F1-Score : memberikan keseimbangan antara precision dan recall, memberikan gambaran yang lebih lengkap. Decision Tree dan Naive Bayes menunjukkan nilai F1-Score yang hampir identik (~0.80), memberikan keseimbangan yang lebih baik antara precision dan recall dibandingkan dengan Random Forest (F1-Score sekitar 0.80).
 
-   Berdasarkan hasil evaluasi, model **`LightGBM`** menunjukkan akurasi tertinggi **(0.9705)**, tetapi perbedaannya dengan **XGBoost** dan **Random Forest sangat** kecil. Mengingat keseimbangan antara Precision dan Recall, XGBoost dipilih sebagai solusi final karena memiliki kombinasi Precision dan Recall yang lebih baik dibandingkan model lain.
+   Berdasarkan hasil evaluasi, meskipun **`Naive Bayes`** dan **Random Forest** menunjukkan akurasi tertinggi (0.9705), **Decision Tree** dipilih sebagai model terbaik. Meskipun sedikit lebih rendah dalam hal akurasi dibandingkan dengan **`Naive Bayes`** dan **Random Forest**, **Decision Tree** menunjukkan keseimbangan yang lebih baik antara Precision dan Recall. Hal ini penting, karena model yang mampu mendeteksi lebih banyak kasus positif (dengan recall yang lebih tinggi) dan memberikan sedikit kesalahan positif (precision yang tinggi) lebih diutamakan dalam aplikasi medis untuk prediksi diabetes.
 
-2. Confusion Matrix :
+2. Analisis Berdasarkan Confusion Matrix:
 
    | Model         | Actual             | Predicted Negatif (0) | Predicted Positif (1) |
    | ------------- | ------------------ | --------------------- | --------------------- |
-   | Random Forest | Actual Negatif (0) | 27310                 | 128                   |
-   | Random Forest | Actual Positif (1) | 822                   | 1740                  |
-   | XGBoost       | Actual Negatif (0) | 27357                 | 81                    |
-   | XGBoost       | Actual Positif (1) | 815                   | 1747                  |
-   | LightGBM      | Actual Negatif (0) | 27389                 | 49                    |
-   | LightGBM      | Actual Positif (1) | 835                   | 1727                  |
+   | Random Forest | Actual Negatif (0) | 18213                 | 79                    |
+   | Random Forest | Actual Positif (1) | 529                   | 1179                  |
+   | Decision Tree | Actual Negatif (0) | 17805                 | 487                   |
+   | Decision Tree | Actual Positif (1) | 464                   | 1244                  |
+   | Naive Bayes   | Actual Negatif (0) | 17798                 | 494                   |
+   | Naive Bayes   | Actual Positif (1) | 1179                  | 529                   |
 
-   Berdasarkan confusion matrix, ketiga model memiliki performa yang sangat baik dalam mengklasifikasikan kelas negatif (0), dengan jumlah **True Negative (TN) yang tinggi** dan **False Positive (FP) yang sangat rendah**, menunjukkan bahwa model jarang salah mengklasifikasikan kasus negatif sebagai positif. Namun, terdapat perbedaan dalam menangani kelas positif (1). **LightGBM memiliki jumlah False Negative (FN) tertinggi (835),** yang berarti lebih banyak kasus positif yang tidak terdeteksi dibandingkan XGBoost (815) dan Random Forest (822). **XGBoost menunjukkan keseimbangan terbaik** dengan False Negative yang lebih rendah dibanding LightGBM dan False Positive yang lebih rendah dibanding Random Forest, menjadikannya model yang paling optimal untuk mendeteksi kasus positif tanpa banyak kesalahan klasifikasi.
+   Berdasarkan hasil dari confusion matrix untuk ketiga model, berikut adalah poin-poin penting yang perlu diperhatikan:
+
+   1. Performa dalam Mengklasifikasikan Kelas Negatif (0):
+      Ketiga model menunjukkan performa yang sangat baik dalam mengklasifikasikan kelas negatif (0), yang tercermin dalam jumlah True Negative (TN) yang sangat tinggi dan False Positive (FP) yang sangat rendah. Hal ini menunjukkan bahwa model-model tersebut jarang salah mengklasifikasikan individu yang tidak mengidap diabetes sebagai positif. Sebagai contoh, Random Forest mengklasifikasikan 18213 kasus negatif dengan benar, sementara hanya 79 yang salah diklasifikasikan sebagai positif.
+
+   2. Performa dalam Mengklasifikasikan Kelas Positif (1):
+      Meskipun ketiga model sangat baik dalam mendeteksi kelas negatif, ada perbedaan signifikan dalam cara mereka menangani kelas positif (1).
+
+   - Naive Bayes menunjukkan jumlah False Negative (FN) tertinggi, dengan 1179 kasus positif yang tidak terdeteksi dengan baik (dikelompokkan sebagai negatif). Ini berarti model Naive Bayes lebih sering gagal mendeteksi individu yang benar-benar mengidap diabetes.
+   - Decision Tree memiliki False Negative yang lebih rendah (464) dibandingkan Naive Bayes dan False Positive yang lebih rendah dibandingkan dengan Random Forest (529). Dengan demikian, Decision Tree lebih baik dalam mendeteksi kasus positif tanpa terlalu banyak menghasilkan kesalahan klasifikasi.
+
+   3. Keunggulan Decision Tree:
+      Secara keseluruhan, Decision Tree menunjukkan keseimbangan terbaik dalam menangani kedua kelas. Model ini memiliki False Negative lebih rendah dibandingkan Naive Bayes dan False Positive lebih rendah dibandingkan Random Forest. Hal ini menjadikannya model yang lebih optimal untuk mendeteksi kasus positif (diabetes) dengan lebih akurat dan dengan lebih sedikit kesalahan klasifikasi, yang sangat penting dalam konteks medis di mana deteksi dini sangat krusial.
+
+## Hyperparameter Tuning
+
+Pada bagian ini, dilakukan hyperparameter tuning untuk tiga model pembelajaran mesin utama, yaitu Random Forest, Decision Tree, dan Naive Bayes. Proses ini bertujuan untuk menemukan parameter terbaik bagi masing-masing model untuk meningkatkan performa prediksi.
+
+1. Hyperparameter Tuning untuk Random Forest:
+   Untuk Random Forest, dilakukan pencarian grid untuk parameter berikut:
+   - `n_estimators`: Jumlah pohon dalam hutan, dicoba dengan nilai 100 dan 200.
+   - `max_depth`: Kedalaman maksimum pohon, dicoba dengan nilai None, 10, dan 20.
+   - `min_samples_split`: Jumlah minimum sampel untuk membagi node, dicoba dengan nilai 2 dan 5.
+   - `min_samples_leaf`: Jumlah minimum sampel untuk menjadi daun, dicoba dengan nilai 1 dan 2.
+     Hasil tuning menunjukkan bahwa Random Forest memberikan hasil terbaik dengan parameter:
+   - Best Params: `{'max_depth': 10, 'min_samples_leaf': 1, 'min_samples_split': 2, 'n_estimators': 200}`
+   - Best Score: 0.9718
+
+### Classification Report untuk Random Forest
+
+| Model            | Precision | Recall | F1-Score | Support |
+| ---------------- | --------- | ------ | -------- | ------- |
+| **Class 0**      | 0.97      | 1.00   | 0.99     | 18292   |
+| **Class 1**      | 1.00      | 0.67   | 0.81     | 1708    |
+| **Accuracy**     |           |        | 0.9705   | 20000   |
+| **Macro Avg**    | 0.99      | 0.84   | 0.90     | 20000   |
+| **Weighted Avg** | 0.97      | 0.97   | 0.97     | 20000   |
+
+2. Hyperparameter Tuning untuk Decision Tree:
+   Untuk Decision Tree, parameter yang di-tune meliputi:
+   - `max_depth`: Kedalaman maksimum pohon, dicoba dengan nilai None, 5, 10, dan 20.
+   - `min_samples_split`: Jumlah minimum sampel untuk membagi node, dicoba dengan nilai 2, 5, dan 10.
+   - `min_samples_leaf`: Jumlah minimum sampel untuk menjadi daun, dicoba dengan nilai 1, 2, dan 4.
+     Hasil tuning untuk Decision Tree menunjukkan parameter terbaik:
+   - Best Params: `{'max_depth': 5, 'min_samples_leaf': 1, 'min_samples_split': 2}`
+   - Best Score: 0.9718
+
+### Classification Report untuk Decision Tree
+
+| Model            | Precision | Recall | F1-Score | Support |
+| ---------------- | --------- | ------ | -------- | ------- |
+| **Class 0**      | 0.97      | 1.00   | 0.99     | 18292   |
+| **Class 1**      | 1.00      | 0.67   | 0.81     | 1708    |
+| **Accuracy**     |           |        | 0.9718   | 20000   |
+| **Macro Avg**    | 0.99      | 0.84   | 0.90     | 20000   |
+| **Weighted Avg** | 0.97      | 0.97   | 0.97     | 20000   |
+
+3. Hyperparameter Tuning untuk Naive Bayes:
+   Untuk Naive Bayes, parameter yang di-tune adalah:
+   - `alpha`: Parameter smoothing, dicoba dengan nilai 0.1, 0.5, 1.0, dan 2.0.
+   - `binarize`: Ambang batas binarisasi untuk fitur, dicoba dengan nilai 0.0, 0.5, dan 1.0.
+     Hasil tuning untuk Naive Bayes menunjukkan parameter terbaik:
+   - Best Params: `{'alpha': 1.0, 'binarize': 0.5}`
+   - Best Score: 0.9327375
+
+### Classification Report untuk Naive Bayes
+
+| Model            | Precision | Recall | F1-Score | Support |
+| ---------------- | --------- | ------ | -------- | ------- |
+| **Class 0**      | 0.94      | 0.99   | 0.96     | 18292   |
+| **Class 1**      | 0.75      | 0.32   | 0.44     | 1708    |
+| **Accuracy**     |           |        | 0.9327   | 20000   |
+| **Macro Avg**    | 0.85      | 0.64   | 0.70     | 20000   |
+| **Weighted Avg** | 0.92      | 0.93   | 0.92     | 20000   |
+
+- Naive Bayes memiliki False Negatives yang tinggi, dengan banyak kasus positif (diabetes) yang tidak terdeteksi dengan baik, yang menjadikan model ini kurang optimal dalam hal deteksi diabetes.
+
+## Pemilihan Model Terbaik Setelah Hypertunning
+
+Setelah evaluasi menggunakan berbagai metrik, Decision Tree dipilih sebagai model terbaik untuk memprediksi kemungkinan seseorang mengidap diabetes. Model ini memberikan keseimbangan terbaik antara Precision dan Recall, yang sangat penting dalam konteks medis, terutama dalam mendeteksi kasus positif (diabetes) dengan sedikit kesalahan klasifikasi. Berikut adalah penjelasan lebih lanjut tentang model Decision Tree dan langkah-langkah yang dilakukan untuk melatih serta menguji model ini.
+
+## Kesimpulan
+
+Berdasarkan analisis dan evaluasi model, jelas bahwa model pembelajaran mesin, khususnya Random Forest dan Decision Tree, dapat memprediksi kemungkinan seseorang mengidap diabetes dengan menggunakan fitur-fitur kesehatan yang ada. Kedua model tersebut menunjukkan kinerja yang baik, dengan skor akurasi yang tinggi dan metrik precision serta recall yang kompetitif. Meskipun ada sedikit perbedaan dalam kinerja model, Decision Tree dipilih sebagai model yang lebih seimbang berdasarkan kemampuannya untuk mendeteksi kasus positif (diabetes) dengan sedikit kesalahan positif, yang sangat penting dalam konteks medis.
