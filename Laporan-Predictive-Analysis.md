@@ -178,29 +178,37 @@ Metrik Evaluasi yang Digunakan
 
    - **Accuracy**: Mengukur persentase prediksi yang benar dari total data. Metrik ini memberikan gambaran umum tentang kinerja model, meskipun dalam beberapa kasus, seperti ketidakseimbangan kelas, akurasi saja bisa menyesatkan.
 
-     Accuracy = (TP + TN) / (TP + TN + FP + FN)
+   $$
+   \text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
+   $$
 
-     ```python
-     print(f"Akurasi: {accuracy_score(y_test, y_pred_dt):.4f}")
-     ```
+   ```python
+   print(f"Akurasi: {accuracy_score(y_test, y_pred_dt):.4f}")
+   ```
 
 2. **`Classification Report`** :
 
    - **Precision**: Menunjukkan seberapa banyak dari prediksi positif yang benar-benar positif. Dalam konteks ini, precision menggambarkan seberapa banyak pasien yang diprediksi mengidap diabetes benar-benar mengidapnya. Precision yang tinggi mengurangi risiko memberikan diagnosis positif yang salah.
 
-     Precision = TP / (TP + FP)
+   $$
+    \text{Precision} = \frac{TP}{TP + FP}
+   $$
 
    - **Recall (Sensitivity)**: Mengukur seberapa banyak kasus positif yang benar-benar berhasil dideteksi oleh model. Recall sangat penting dalam situasi medis, di mana kegagalan untuk mendeteksi seseorang yang mengidap diabetes (false negative) bisa berakibat fatal.
 
-     Recall = TP / (TP + FN)
+   $$
+   \text{Recall} = \frac{TP}{TP + FN}
+   $$
 
    - **F1-Score**: Merupakan rata-rata harmonis antara precision dan recall. F1-score memberikan gambaran yang lebih seimbang antara keduanya, terutama jika data cenderung tidak seimbang, dan membantu menilai trade-off antara precision dan recall.
 
-     F1-Score = 2 _ (Precision _ Recall) / (Precision + Recall)
+   $$
+   \text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
+   $$
 
-     ```python
-     print("\nClassification Report:\n", classification_report(y_test, y_pred))
-     ```
+   ```python
+   print("\nClassification Report:\n", classification_report(y_test, y_pred))
+   ```
 
 3. **`Confusion Matrix`** : Matriks ini memberikan rincian dari prediksi model, mengklasifikasikan jumlah true positives, true negatives, false positives, dan false negatives. Hal ini sangat berguna untuk menganalisis jenis kesalahan yang dilakukan oleh model, misalnya, apakah lebih sering gagal mendeteksi diabetes atau mengidentifikasi orang sehat sebagai penderita diabetes.
 
@@ -259,19 +267,3 @@ Berikut adalah ringkasan hasil evaluasi berdasarkan prediksi pada data :
 
    3. Keunggulan Decision Tree:
       Secara keseluruhan, Decision Tree menunjukkan keseimbangan terbaik dalam menangani kedua kelas. Model ini memiliki False Negative lebih rendah dibandingkan Naive Bayes dan False Positive lebih rendah dibandingkan Random Forest. Hal ini menjadikannya model yang lebih optimal untuk mendeteksi kasus positif (diabetes) dengan lebih akurat dan dengan lebih sedikit kesalahan klasifikasi, yang sangat penting dalam konteks medis di mana deteksi dini sangat krusial.
-
-$$
-\text{Precision} = \frac{TP}{TP + FP}
-$$
-
-$$
-\text{Recall} = \frac{TP}{TP + FN}
-$$
-
-$$
-\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}
-$$
-
-$$
-\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}
-$$
