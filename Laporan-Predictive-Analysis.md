@@ -10,11 +10,9 @@ Serangan jantung sering kali datang tanpa peringatan sebelumnya, dan dapat terja
 
 Di era modern ini, teknologi pembelajaran mesin (machine learning) menawarkan pendekatan yang lebih efisien dan cepat dalam mendiagnosis penyakit jantung, termasuk serangan jantung. Pembelajaran mesin menggunakan algoritma untuk mempelajari pola-pola dalam data dan membuat prediksi berdasarkan informasi yang tersedia. Dengan memanfaatkan data medis, seperti hasil pemeriksaan fisik, tes darah, dan rekam medis lainnya, pembelajaran mesin dapat menganalisis informasi secara lebih cepat dan akurat daripada metode tradisional.
 
-Sejumlah penelitian telah menunjukkan potensi besar pembelajaran mesin dalam memprediksi serangan jantung. Misalnya, penelitian oleh [Kaur et al. (2016)](https://iopscience.iop.org/article/10.1088/1757-899X/1022/1/012046) menunjukkan bahwa algoritma pembelajaran mesin, seperti K-Nearest Neighbor (K-NN) dan Support Vector Machine (SVM), dapat digunakan untuk memprediksi kemungkinan seseorang mengalami serangan jantung dengan akurasi yang tinggi, mencapai lebih dari 86.88%. Penelitian lain, seperti yang dilakukan oleh [Ganaie et al. (2017)](https://www.researchgate.net/publication/383112353_Heart_Disease_Prediction_and_GUI_Interaction_based_on_Machine_Learning), menunjukkan bahwa penggunaan model berbasis pembelajaran mesin dapat membantu dokter dalam memproses data lebih efisien, mengidentifikasi pasien berisiko tinggi, dan memberikan perawatan yang lebih tepat.
+Sejumlah penelitian telah menunjukkan potensi besar pembelajaran mesin dalam memprediksi serangan jantung. Misalnya, penelitian oleh [Kaur et al. (2016)](https://iopscience.iop.org/article/10.1088/1757-899X/1022/1/012046) menunjukkan bahwa algoritma pembelajaran mesin, seperti K-Nearest Neighbor (K-NN) dan Random Forest, dapat digunakan untuk memprediksi kemungkinan seseorang mengalami serangan jantung dengan akurasi yang tinggi, mencapai lebih dari 86.88%. Penelitian lain, seperti yang dilakukan oleh [Ganaie et al. (2017)](https://www.researchgate.net/publication/383112353_Heart_Disease_Prediction_and_GUI_Interaction_based_on_Machine_Learning), menunjukkan bahwa penggunaan model berbasis pembelajaran mesin dapat membantu dokter dalam memproses data lebih efisien, mengidentifikasi pasien berisiko tinggi, dan memberikan perawatan yang lebih tepat.
 
 Dalam beberapa tahun terakhir, dataset yang mengandung berbagai informasi medis mengenai individu, termasuk usia, jenis kelamin, tekanan darah, kadar kolesterol, dan hasil tes lainnya, telah menjadi bahan penting untuk pengembangan model prediksi. Dengan menggabungkan faktor-faktor tersebut dalam satu model, algoritma pembelajaran mesin dapat memberikan prediksi yang lebih presisi tentang kemungkinan terjadinya serangan jantung. Salah satu model yang sering digunakan untuk tujuan ini adalah Random Forest, yang terbukti efektif dalam menangani data yang memiliki banyak fitur dan hubungan yang kompleks.
-
-Namun, meskipun algoritma seperti Random Forest dan SVM menunjukkan hasil yang menjanjikan, masalah ketidakseimbangan data sering kali muncul, di mana jumlah individu yang mengalami serangan jantung jauh lebih sedikit dibandingkan yang tidak mengalami serangan jantung. Oleh karena itu, penting untuk melakukan teknik ekstraksi dan balancing data untuk memastikan model dapat memberik
 
 ## Business Understanding
 
@@ -38,10 +36,10 @@ Namun, meskipun algoritma seperti Random Forest dan SVM menunjukkan hasil yang m
 
 **`Heart Attack Prediction Dataset`** adalah kumpulan data medis yang berisi informasi tentang pasien yang dirawat di Rumah Sakit Zheen di Erbil, Irak, dari Januari 2019 hingga Mei 2019. Dataset ini mencakup 9 atribut medis dan 1319 baris yang dapat digunakan untuk memprediksi kemungkinan serangan jantung, dengan hasil berupa label positif (terkena serangan jantung) atau negatif (tidak terkena serangan jantung). Dataset ini sudah dibersihkan dan tidak mengandung nilai yang hilang. **[Kaggle](https://www.kaggle.com/datasets/fatemehmohammadinia/heart-attack-dataset-tarik-a-rashid)**.
 
-### Variabel-variabel pada Diabetes prediction dataset adalah sebagai berikut:
+### Variabel-variabel pada Heart Attact prediction dataset adalah sebagai berikut:
 
-- **`gender`** :Jenis kelamin yang merujuk pada perbedaan biologis antara laki-laki dan perempuan, yang dapat memengaruhi risiko seseorang terhadap diabetes. Terdapat tiga kategori pada variabel ini: laki-laki, perempuan, dan lainnya.
-- **`age`** : Usia merupakan faktor yang sangat penting karena diabetes lebih sering didiagnosis pada individu yang lebih tua. Dalam dataset ini, rentang usia yang tercatat adalah antara 0 hingga 80 tahun.
+- **`gender`** :Jenis kelamin yang merujuk pada perbedaan biologis antara laki-laki dan perempuan, yang dapat memengaruhi risiko seseorang terkena serangan jantung.
+- **`age`** : Usia merupakan faktor yang sangat penting karena serangan jantung lebih sering didiagnosis pada individu yang lebih tua. Dalam dataset ini, rentang usia yang tercatat adalah antara 0 hingga 80 tahun.
 - **`Heart Rate:`** : Denyut jantung per menit
 - **`Systolic Blood Pressure`** : Tekanan darah sistolik (tekanan saat jantung berkontraksi)
 - **`Diastolic Blood Pressure`** : Tekanan darah diastolik (tekanan di antara detak jantung).
