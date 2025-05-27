@@ -4,8 +4,6 @@
 
 ### **Latar Belakang**
 
-### **Latar Belakang**
-
 Penyakit jantung koroner (PJK), terutama serangan jantung, merupakan salah satu penyebab utama kematian di dunia. Menurut data [Organisasi Kesehatan Dunia (WHO)](https://www.who.int/news-room/fact-sheets/detail/cardiovascular-diseases-%28cvds%29), penyakit jantung menyebabkan lebih dari 17 juta kematian setiap tahun, angka yang terus meningkat dari waktu ke waktu. Serangan jantung terjadi ketika aliran darah yang kaya oksigen ke bagian tertentu dari jantung terganggu, yang mengakibatkan kerusakan permanen pada jaringan jantung. Hal ini disebabkan oleh penumpukan plak yang menghambat arteri koronaria atau penyempitan pembuluh darah. Oleh karena itu, deteksi dini serangan jantung menjadi sangat penting, terutama bagi individu yang berisiko tinggi, untuk melakukan intervensi medis yang cepat dan tepat.
 
 Serangan jantung sering kali datang tanpa peringatan sebelumnya, dan dapat terjadi secara tiba-tiba. Beberapa faktor risiko utama yang dapat meningkatkan kemungkinan seseorang mengalami serangan jantung termasuk merokok, tekanan darah tinggi, kadar kolesterol tinggi, diabetes, obesitas, dan gaya hidup yang kurang aktif. Selain itu, usia dan jenis kelamin juga berperan sebagai faktor risiko yang signifikan. Sebagai contoh, pria lebih berisiko mengalami serangan jantung lebih awal daripada wanita. Mengingat kompleksitas dan variabilitas faktor-faktor risiko ini, mendiagnosis kemungkinan serangan jantung pada tahap awal menjadi sangat sulit, terutama dengan menggunakan metode pemeriksaan konvensional yang memerlukan waktu lama.
