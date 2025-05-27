@@ -68,14 +68,14 @@ Visualisasi ini menunjukkan distribusi dua kelas pada variabel **`Result`**. Dar
 
 Visualisasi KDE (Kernel Density Estimation) menunjukkan hubungan antara berbagai fitur dalam dataset. **Scatter plot** di bagian bawah diagonal menggambarkan distribusi titik data untuk pasangan variabel yang relevan, memberikan gambaran visual mengenai korelasi antar fitur. Sementara itu, **plot KDE** yang terletak di diagonal menunjukkan distribusi probabilitas dari setiap variabel. Beberapa fitur seperti **Systolic Blood Pressure**, **Diastolic Blood Pressure**, dan **Heart Rate** menunjukkan distribusi yang lebih normal, mencerminkan pola yang lebih konsisten dalam data. Variabel seperti **Blood Sugar** dan **Troponin** menunjukkan distribusi yang lebih terpusat dengan puncak yang jelas, mengindikasikan variasi yang lebih terbatas dalam nilai-nilai tersebut. Sedangkan variabel biner seperti **Gender** menunjukkan distribusi yang terpisah, dengan sedikit pola dalam scatter plot, yang mengindikasikan bahwa faktor ini tidak memiliki korelasi yang kuat dengan variabel lain di dataset.
 
-![Mean](images/KDE.png)
+![KDE](images/KDE.png)
 
 ### **Visualisasi Correlation Matrix**
 
 Matriks korelasi memberikan wawasan tentang hubungan antar fitur numerik dalam dataset. Dari matriks ini, dapat terlihat bahwa **Systolic Blood Pressure** dan **Diastolic Blood Pressure** memiliki korelasi yang cukup tinggi (0.60), yang menunjukkan hubungan yang kuat antara kedua jenis tekanan darah tersebut. **Age** memiliki korelasi positif yang moderat dengan **Troponin** (0.17) dan **Systolic Blood Pressure** (0.02). Sementara itu, **Blood Sugar** memiliki korelasi yang sangat rendah dengan variabel lainnya, yang mengindikasikan bahwa **Blood Sugar** tidak banyak berhubungan dengan faktor-faktor lain dalam dataset ini.
 **Heart Rate** dan **Diastolic Blood Pressure** menunjukkan korelasi yang cukup rendah (0.13), namun keduanya tetap berperan dalam menentukan kondisi jantung seseorang. **CK-MB** memiliki korelasi rendah dengan semua variabel.
 
-![Mean](./assets/images/Matriks-Korelasi.png)
+![CM](images/Matriks-Korelasi.png)
 
 ## Data Preparation
 
