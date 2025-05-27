@@ -18,8 +18,8 @@ Dalam beberapa tahun terakhir, dataset yang mengandung berbagai informasi medis 
 
 ### Problem Statements
 
-2. Bagaimana cara memprediksi kemungkinan seseorang mengalami serangan jantung berdasarkan faktor-faktor kesehatan yang dimilikinya, seperti usia, jenis kelamin, tekanan darah, kadar gula darah, dan biomarker lainnya?
-3. Sejauh mana akurasi model pembelajaran mesin (seperti Random Forest, Decision Tree, dan Naive Bayes) dalam memprediksi serangan jantung dibandingkan dengan metode konvensional yang ada?
+1. Bagaimana cara memprediksi kemungkinan seseorang mengalami serangan jantung berdasarkan faktor-faktor kesehatan yang dimilikinya, seperti usia, jenis kelamin, tekanan darah, kadar gula darah, dan biomarker lainnya?
+2. Sejauh mana akurasi model pembelajaran mesin (seperti Random Forest, Decision Tree, dan Naive Bayes) dalam memprediksi serangan jantung dibandingkan dengan metode konvensional yang ada?
 
 ### Goals
 
